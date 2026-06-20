@@ -1,0 +1,29 @@
+#!/bin/bash
+# ============================================================
+# NetVisionConnect — Active/désactive le système de fichiers en
+# lecture seule (overlayfs). En lecture seule, la carte SD n'est
+# plus écrite → durée de vie maximale, pas de corruption.
+#
+# À activer UNE FOIS l'appareil configuré et jumelé.
+# Pour modifier ensuite la config : désactiver, modifier, réactiver.
+# ============================================================
+case "$1" in
+  on)
+    sudo raspi-config nonint do_overlayfs 0 \
+      && echo "✅ Lecture seule ACTIVÉE. Redémarrez : sudo reboot"
+    ;;
+  off)
+    sudo raspi-config nonint do_overlayfs 1 \
+      && echo "🔓 Lecture seule DÉSACTIVÉE (écriture possible). Redémarrez : sudo reboot"
+    ;;
+  status)
+    if grep -q "boot=overlay" /proc/cmdline 2>/dev/null; then
+      echo "État : LECTURE SEULE (overlayfs actif)"
+    else
+      echo "État : écriture activée (overlayfs inactif)"
+    fi
+    ;;
+  *)
+    echo "Usage : netvision-readonly on|off|status"
+    ;;
+esac

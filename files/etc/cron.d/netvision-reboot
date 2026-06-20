@@ -1,0 +1,6 @@
+# NetVisionConnect — redémarrage nocturne automatique (purge mémoire)
+# Tous les jours à 04:00. Modifiez l'heure si besoin.
+SHELL=/bin/sh
+PATH=/usr/sbin:/usr/bin:/sbin:/bin
+
+0 4 * * * root /sbin/shutdown -r now

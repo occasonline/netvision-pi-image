@@ -1,0 +1,13 @@
+[Unit]
+Description=NetVisionConnect — préparation de la configuration de boot
+Before=netvision-kiosk.service
+ConditionPathExists=!/boot/firmware/netvision/url.txt
+ConditionPathExists=!/boot/netvision/url.txt
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/netvision-firstboot.sh
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

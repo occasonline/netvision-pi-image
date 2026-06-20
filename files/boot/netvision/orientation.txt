@@ -1,0 +1,7 @@
+# Orientation de CET écran. Valeurs possibles :
+#   landscape         (paysage / horizontal — défaut)
+#   portrait          (portrait, rotation 90° à gauche)
+#   portrait-right    (portrait, rotation 90° à droite)
+#   inverted          (180°, à l'envers)
+# Modifiable depuis n'importe quel PC, puis redémarrer l'écran.
+landscape

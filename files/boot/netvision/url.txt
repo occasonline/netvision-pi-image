@@ -1,0 +1,3 @@
+# URL du player NetVisionConnect chargée par cet écran.
+# Modifiable depuis n'importe quel PC (la carte SD apparaît comme un disque).
+https://app.netvisionconnect.com/?player=true
