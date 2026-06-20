@@ -1,0 +1,5 @@
+# Force les fins de ligne Unix (LF) pour tous les fichiers texte.
+# Indispensable : les scripts shell/config destinés à Linux/Raspberry Pi
+# ne fonctionnent pas avec des fins de ligne Windows (CRLF).
+* text=auto eol=lf
+*.png binary
