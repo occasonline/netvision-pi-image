@@ -16,7 +16,8 @@ cd "$(dirname "$0")"
 
 echo "==> 1/5 Installation des dépendances"
 apt-get update -y
-apt-get install -y git curl xz-utils kpartx qemu-user-static binfmt-support parted file fdisk
+apt-get install -y git curl wget xz-utils unzip kpartx qemu-user-static binfmt-support \
+  parted file fdisk units rsync dosfstools e2fsprogs
 
 echo "==> 2/5 Récupération de pimod"
 if [ ! -d /opt/pimod ]; then
