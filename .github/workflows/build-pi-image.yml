@@ -1,8 +1,7 @@
 name: Build NetVisionConnect Pi image
 
-# Génère automatiquement l'image .img dans le cloud (aucun Linux requis localement).
 on:
-  workflow_dispatch:        # bouton "Run workflow" dans l'onglet Actions
+  workflow_dispatch: {}
   push:
     paths:
       - 'Pifile'
@@ -17,36 +16,26 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Télécharger Raspberry Pi OS Lite (Bookworm, arm64)
+      - name: Download Raspberry Pi OS Lite (Bookworm arm64)
         run: |
           set -e
-          URL="https://downloads.raspberrypi.com/raspios_lite_arm64_latest"
-          echo "Téléchargement de la dernière image Raspberry Pi OS Lite arm64…"
-          curl -L -o raspios.img.xz "$URL"
-          echo "Décompression…"
+          curl -L -o raspios.img.xz "https://downloads.raspberrypi.com/raspios_lite_arm64_latest"
           xz -d -T0 raspios.img.xz
           mv raspios*.img raspios-lite.img 2>/dev/null || mv raspios.img raspios-lite.img
           ls -lh raspios-lite.img
 
-      - name: Préparer le logo du splash
+      - name: Copy splash logo into theme
         run: |
           set -e
-          THEME="files/usr/share/plymouth/themes/netvision"
-          if [ -f assets/logo.png ]; then
-            cp assets/logo.png "$THEME/logo.png"
-            echo "Logo personnalisé copié."
-          else
-            # Placeholder 1x1 transparent pour que le build n'échoue pas si le logo manque
-            printf '\x89PNG\r\n\x1a\n\x00\x00\x00\rIHDR\x00\x00\x00\x01\x00\x00\x00\x01\x08\x06\x00\x00\x00\x1f\x15\xc4\x89\x00\x00\x00\nIDATx\x9cc\x00\x01\x00\x00\x05\x00\x01\r\n-\xdb\x00\x00\x00\x00IEND\xaeB`\x82' > "$THEME/logo.png"
-            echo "⚠️ assets/logo.png absent — placeholder utilisé. Ajoutez votre logo pour le branding."
-          fi
+          cp assets/logo.png files/usr/share/plymouth/themes/netvision/logo.png
+          ls -lh files/usr/share/plymouth/themes/netvision/logo.png
 
-      - name: Construire l'image avec pimod
+      - name: Build image with pimod
         uses: Nature40/pimod@master
         with:
           pifile: Pifile
 
-      - name: Compresser l'image finale
+      - name: Compress final image
         run: |
           set -e
           OUT="netvisionconnect-pi-$(date +%Y%m%d).img"
@@ -54,7 +43,7 @@ jobs:
           xz -T0 -9 "$OUT"
           ls -lh "$OUT.xz"
 
-      - name: Publier l'image (artifact téléchargeable)
+      - name: Upload image artifact
         uses: actions/upload-artifact@v4
         with:
           name: netvisionconnect-pi-image
