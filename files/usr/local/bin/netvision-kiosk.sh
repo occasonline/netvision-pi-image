@@ -50,9 +50,12 @@ if [ -f "$PREF" ]; then
   sed -i 's/"exited_cleanly":false/"exited_cleanly":true/; s/"exit_type":"[^"]*"/"exit_type":"Normal"/' "$PREF" 2>/dev/null
 fi
 
+# --- Binaire Chromium (chromium-browser sur Pi OS, chromium sur Debian) ---
+CHROME="$(command -v chromium-browser || command -v chromium || echo chromium)"
+
 # --- Boucle de résilience : relance Chromium s'il se ferme ---
 while true; do
-  chromium \
+  "$CHROME" \
     --kiosk "$URL" \
     --noerrdialogs \
     --disable-infobars \

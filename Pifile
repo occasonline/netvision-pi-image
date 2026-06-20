@@ -10,13 +10,12 @@ PUMP 1800M
 
 # --- Paquets : kiosque, branding, watchdog ---
 RUN apt-get update
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
-    xserver-xorg xinit x11-xserver-utils openbox \
-    chromium unclutter ca-certificates fonts-dejavu-core \
-    plymouth plymouth-themes watchdog
+RUN sh -c 'DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends xserver-xorg xinit x11-xserver-utils openbox unclutter ca-certificates fonts-dejavu-core plymouth plymouth-themes watchdog'
+# Navigateur : le paquet s'appelle chromium-browser (Pi OS) ou chromium (Debian)
+RUN sh -c 'DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends chromium-browser || DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends chromium'
 
 # --- Utilisateur dédié au kiosque ---
-RUN id -u kiosk >/dev/null 2>&1 || useradd -m -s /bin/bash kiosk
+RUN sh -c 'id -u kiosk >/dev/null 2>&1 || useradd -m -s /bin/bash kiosk'
 RUN usermod -aG video,tty,input,render kiosk
 
 # --- Autoriser le serveur X pour un utilisateur non-root ---
@@ -41,7 +40,7 @@ INSTALL files/etc/watchdog.conf /etc/watchdog.conf
 
 # --- Splash de démarrage (logo NetVisionConnect) ---
 INSTALL files/usr/share/plymouth/themes/netvision /usr/share/plymouth/themes/netvision
-RUN plymouth-set-default-theme netvision || true
+RUN sh -c 'plymouth-set-default-theme netvision || true'
 
 # --- Config par défaut (déposée sur la carte SD au 1er démarrage) ---
 RUN mkdir -p /opt/netvision/defaults
