@@ -50,6 +50,13 @@ chown -R kiosk:kiosk /home/kiosk
 systemctl disable netvision-kiosk.service 2>/dev/null || true
 systemctl set-default multi-user.target
 
+# Forcer le 1080p au démarrage (la 4K surcharge le rendu navigateur → demi-écran)
+BOOTDIR=/boot/firmware; [ -f "$BOOTDIR/cmdline.txt" ] || BOOTDIR=/boot
+grep -q 'video=HDMI' "$BOOTDIR/cmdline.txt" \
+  || sed -i 's/$/ video=HDMI-A-1:1920x1080@60/' "$BOOTDIR/cmdline.txt"
+grep -q '^disable_overscan' "$BOOTDIR/config.txt" 2>/dev/null \
+  || echo 'disable_overscan=1' >> "$BOOTDIR/config.txt"
+
 echo ""
 echo "✅ Correctif appliqué. Redémarrage dans 5 secondes…"
 sleep 5
