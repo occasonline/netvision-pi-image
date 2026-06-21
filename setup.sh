@@ -9,13 +9,17 @@ set -e
 export DEBIAN_FRONTEND=noninteractive
 
 echo "== Installation des paquets =="
+APT="apt-get -y -o Dpkg::Options::=--force-confold -o Dpkg::Options::=--force-confdef"
 apt-get update
-apt-get install -y --no-install-recommends \
+$APT install --no-install-recommends \
   xserver-xorg xinit x11-xserver-utils openbox unclutter ca-certificates \
   fonts-dejavu-core plymouth plymouth-themes watchdog
 # Navigateur : chromium-browser (Pi OS) ou chromium (Debian)
-apt-get install -y --no-install-recommends chromium-browser \
-  || apt-get install -y --no-install-recommends chromium
+$APT install --no-install-recommends chromium-browser \
+  || $APT install --no-install-recommends chromium
+
+# Notre configuration watchdog (posée après le paquet)
+cp /opt/netvision/watchdog.conf /etc/watchdog.conf
 
 echo "== Utilisateur kiosk =="
 id kiosk >/dev/null 2>&1 || useradd -m -s /bin/bash kiosk

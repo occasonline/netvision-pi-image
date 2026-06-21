@@ -19,10 +19,11 @@ INSTALL files/usr/local/bin/netvision-kiosk.sh /usr/local/bin/netvision-kiosk.sh
 INSTALL files/usr/local/bin/netvision-readonly /usr/local/bin/netvision-readonly
 INSTALL files/usr/local/bin/netvision-firstboot.sh /usr/local/bin/netvision-firstboot.sh
 
-# --- Services / cron / watchdog ---
+# --- Services / cron ---
 INSTALL files/etc/systemd/system/netvision-firstboot.service /etc/systemd/system/netvision-firstboot.service
 INSTALL files/etc/cron.d/netvision-reboot /etc/cron.d/netvision-reboot
-INSTALL files/etc/watchdog.conf /etc/watchdog.conf
+# watchdog.conf : posé par setup.sh APRÈS le paquet (évite la question dpkg)
+INSTALL files/etc/watchdog.conf /opt/netvision/watchdog.conf
 
 # --- Fichiers consommés par setup.sh (zone de préparation) ---
 INSTALL files/usr/share/plymouth/themes/netvision /opt/netvision/theme
