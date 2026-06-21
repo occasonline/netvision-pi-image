@@ -1,68 +1,38 @@
 # ============================================================
 # NetVisionConnect — image kiosque Raspberry Pi 4 / 5 (64-bit)
-# Construite avec pimod (https://github.com/Nature40/pimod)
-# Base : Raspberry Pi OS Lite (Bookworm, arm64)
+# Base : Raspberry Pi OS Lite (arm64) · Construite avec pimod
+#
+# Note : pimod exécute les RUN SANS shell (argv direct). On garde donc
+# uniquement des RUN simples et on délègue toute la logique à setup.sh,
+# exécuté via "RUN bash …" (un vrai shell dans le chroot).
 # ============================================================
 FROM raspios-lite.img
 
-# Agrandit l'image pour les paquets supplémentaires
 PUMP 1800M
-
-# --- Paquets : kiosque, branding, watchdog ---
-RUN apt-get update
-RUN sh -c 'DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends xserver-xorg xinit x11-xserver-utils openbox unclutter ca-certificates fonts-dejavu-core plymouth plymouth-themes watchdog'
-# Navigateur : le paquet s'appelle chromium-browser (Pi OS) ou chromium (Debian)
-RUN sh -c 'DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends chromium-browser || DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends chromium'
-
-# --- Utilisateur dédié au kiosque ---
-RUN sh -c 'id -u kiosk >/dev/null 2>&1 || useradd -m -s /bin/bash kiosk'
-RUN usermod -aG video,tty,input,render kiosk
-
-# --- Autoriser le serveur X pour un utilisateur non-root ---
-RUN sh -c 'printf "allowed_users=anybody\nneeds_root_rights=yes\n" > /etc/X11/Xwrapper.config'
 
 # --- Scripts NetVisionConnect ---
 INSTALL files/usr/local/bin/netvision-kiosk.sh /usr/local/bin/netvision-kiosk.sh
 INSTALL files/usr/local/bin/netvision-readonly /usr/local/bin/netvision-readonly
 INSTALL files/usr/local/bin/netvision-firstboot.sh /usr/local/bin/netvision-firstboot.sh
-RUN chmod +x /usr/local/bin/netvision-kiosk.sh /usr/local/bin/netvision-readonly /usr/local/bin/netvision-firstboot.sh
 
-# --- Démarrage du kiosque : autologin console (kiosk) + startx ---
+# --- Services / cron / watchdog ---
 INSTALL files/etc/systemd/system/netvision-firstboot.service /etc/systemd/system/netvision-firstboot.service
-RUN mkdir -p /etc/systemd/system/getty@tty1.service.d
-INSTALL files/etc/systemd/system/getty@tty1.service.d/autologin.conf /etc/systemd/system/getty@tty1.service.d/autologin.conf
-INSTALL files/home/kiosk/.bash_profile /home/kiosk/.bash_profile
-INSTALL files/home/kiosk/.xinitrc /home/kiosk/.xinitrc
-RUN chown -R kiosk:kiosk /home/kiosk
-
-# --- Redémarrage nocturne (cron) ---
 INSTALL files/etc/cron.d/netvision-reboot /etc/cron.d/netvision-reboot
-RUN chmod 644 /etc/cron.d/netvision-reboot
-
-# --- Watchdog matériel ---
 INSTALL files/etc/watchdog.conf /etc/watchdog.conf
 
-# --- Splash de démarrage (logo NetVisionConnect) ---
+# --- Splash (logo) ---
 INSTALL files/usr/share/plymouth/themes/netvision /usr/share/plymouth/themes/netvision
-RUN sh -c 'plymouth-set-default-theme netvision || true'
 
-# --- Config par défaut (déposée sur la carte SD au 1er démarrage) ---
-RUN mkdir -p /opt/netvision/defaults
+# --- Fichiers consommés par setup.sh ---
+INSTALL files/home/kiosk/.bash_profile /opt/netvision/home/.bash_profile
+INSTALL files/home/kiosk/.xinitrc /opt/netvision/home/.xinitrc
+INSTALL files/etc/systemd/system/getty@tty1.service.d/autologin.conf /opt/netvision/autologin.conf
 INSTALL files/boot/netvision/url.txt /opt/netvision/defaults/url.txt
 INSTALL files/boot/netvision/orientation.txt /opt/netvision/defaults/orientation.txt
+INSTALL setup.sh /opt/netvision/setup.sh
 
-# --- Activer les services ---
-RUN systemctl set-default multi-user.target
-RUN systemctl enable netvision-firstboot.service
-RUN systemctl enable getty@tty1.service
-RUN systemctl enable watchdog.service
+# --- Permissions ---
+RUN chmod +x /usr/local/bin/netvision-kiosk.sh /usr/local/bin/netvision-readonly /usr/local/bin/netvision-firstboot.sh /opt/netvision/setup.sh
 
-# --- Réglages de boot (détecte /boot/firmware ou /boot selon le montage) ---
-RUN sh -c 'B=/boot/firmware; [ -f "$B/config.txt" ] || B=/boot; \
-  grep -q "^dtparam=watchdog=on" "$B/config.txt" || echo "dtparam=watchdog=on" >> "$B/config.txt"; \
-  grep -q "^disable_splash=1" "$B/config.txt" || echo "disable_splash=1" >> "$B/config.txt"; \
-  grep -q "plymouth.ignore-serial-consoles" "$B/cmdline.txt" || \
-    sed -i "s/$/ quiet splash plymouth.ignore-serial-consoles logo.nologo vt.global_cursor_default=0/" "$B/cmdline.txt"'
-
-# --- Intégrer plymouth à l'initramfs (best-effort) ---
-RUN sh -c 'update-initramfs -u 2>/dev/null || true'
+# --- Toute la configuration (vrai shell) ---
+RUN bash /opt/netvision/setup.sh
