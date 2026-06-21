@@ -41,6 +41,15 @@ PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
 @reboot root sleep 30 && /usr/local/bin/netvision-screen-tick.sh --enforce
 CRON
 chmod 644 /etc/cron.d/netvision-screen
+
+# Agent CEC local : piloté par les boutons « Allumer/Éteindre l'écran » du dashboard
+wget -qO /usr/local/bin/netvision-cec-agent.py "$BASE/usr/local/bin/netvision-cec-agent.py" \
+  || curl -fsSL -o /usr/local/bin/netvision-cec-agent.py "$BASE/usr/local/bin/netvision-cec-agent.py"
+chmod +x /usr/local/bin/netvision-cec-agent.py
+wget -qO /etc/systemd/system/netvision-cec-agent.service "$BASE/etc/systemd/system/netvision-cec-agent.service" \
+  || curl -fsSL -o /etc/systemd/system/netvision-cec-agent.service "$BASE/etc/systemd/system/netvision-cec-agent.service"
+systemctl enable netvision-cec-agent.service 2>/dev/null || true
+systemctl restart netvision-cec-agent.service 2>/dev/null || true
 # Horaire par défaut sur la carte SD (modifiable par écran), si absent
 SCFG=/boot/firmware/netvision; [ -d /boot/firmware ] || SCFG=/boot/netvision
 mkdir -p "$SCFG"

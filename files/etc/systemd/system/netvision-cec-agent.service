@@ -1,0 +1,11 @@
+[Unit]
+Description=NetVisionConnect CEC agent (contrôle local de l'alimentation TV)
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/python3 /usr/local/bin/netvision-cec-agent.py
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
