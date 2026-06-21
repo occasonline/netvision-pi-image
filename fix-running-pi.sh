@@ -48,9 +48,12 @@ mkdir -p "$SCFG"
 
 # --- Branding NVC : logo de chargement (feh) + splash de boot (Plymouth) ---
 LOGO_URL="https://raw.githubusercontent.com/occasonline/netvision-pi-image/master/assets/logo.png"
+SPLASH_URL="https://raw.githubusercontent.com/occasonline/netvision-pi-image/master/assets/splash.png"
 mkdir -p /usr/local/share/netvision /usr/share/plymouth/themes/netvision
 wget -qO /usr/local/share/netvision/logo.png "$LOGO_URL" \
   || curl -fsSL -o /usr/local/share/netvision/logo.png "$LOGO_URL" || true
+wget -qO /usr/local/share/netvision/splash.png "$SPLASH_URL" \
+  || curl -fsSL -o /usr/local/share/netvision/splash.png "$SPLASH_URL" || true
 cp /usr/local/share/netvision/logo.png /usr/share/plymouth/themes/netvision/logo.png 2>/dev/null || true
 for f in netvision.plymouth netvision.script; do
   wget -qO "/usr/share/plymouth/themes/netvision/$f" "$BASE/usr/share/plymouth/themes/netvision/$f" \
