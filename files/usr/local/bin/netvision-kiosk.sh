@@ -52,6 +52,11 @@ xset s noblank
 # --- Masquer le curseur ---
 unclutter -idle 0.1 -root &
 
+# --- Fond de marque NVC affiché pendant le chargement (avant Chromium) ---
+if command -v feh >/dev/null 2>&1 && [ -f /usr/local/share/netvision/logo.png ]; then
+  feh --no-fehbg --image-bg "#1B3A6B" --bg-center /usr/local/share/netvision/logo.png 2>/dev/null || true
+fi
+
 # --- Évite la bulle "Restaurer les pages" après un redémarrage ---
 PREF="$HOME/.config/chromium/Default/Preferences"
 if [ -f "$PREF" ]; then

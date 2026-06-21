@@ -13,7 +13,8 @@ export DEBIAN_FRONTEND=noninteractive
 echo "== Installation des paquets (X, Chromium)… =="
 apt-get update
 apt-get install -y --no-install-recommends \
-  xserver-xorg xinit x11-xserver-utils openbox unclutter ca-certificates fonts-dejavu-core cec-utils
+  xserver-xorg xinit x11-xserver-utils openbox unclutter ca-certificates fonts-dejavu-core \
+  cec-utils feh plymouth plymouth-themes
 apt-get install -y --no-install-recommends chromium \
   || apt-get install -y --no-install-recommends chromium-browser
 
@@ -44,6 +45,22 @@ chmod 644 /etc/cron.d/netvision-screen
 SCFG=/boot/firmware/netvision; [ -d /boot/firmware ] || SCFG=/boot/netvision
 mkdir -p "$SCFG"
 [ -f "$SCFG/schedule.txt" ] || wget -qO "$SCFG/schedule.txt" "$BASE/boot/netvision/schedule.txt" || true
+
+# --- Branding NVC : logo de chargement (feh) + splash de boot (Plymouth) ---
+LOGO_URL="https://raw.githubusercontent.com/occasonline/netvision-pi-image/master/assets/logo.png"
+mkdir -p /usr/local/share/netvision /usr/share/plymouth/themes/netvision
+wget -qO /usr/local/share/netvision/logo.png "$LOGO_URL" \
+  || curl -fsSL -o /usr/local/share/netvision/logo.png "$LOGO_URL" || true
+cp /usr/local/share/netvision/logo.png /usr/share/plymouth/themes/netvision/logo.png 2>/dev/null || true
+for f in netvision.plymouth netvision.script; do
+  wget -qO "/usr/share/plymouth/themes/netvision/$f" "$BASE/usr/share/plymouth/themes/netvision/$f" \
+    || curl -fsSL -o "/usr/share/plymouth/themes/netvision/$f" "$BASE/usr/share/plymouth/themes/netvision/$f" || true
+done
+plymouth-set-default-theme netvision 2>/dev/null || true
+BD=/boot/firmware; [ -f "$BD/cmdline.txt" ] || BD=/boot
+grep -q 'splash' "$BD/cmdline.txt" \
+  || sed -i 's/$/ quiet splash plymouth.ignore-serial-consoles logo.nologo/' "$BD/cmdline.txt"
+update-initramfs -u 2>/dev/null || true
 
 # Autoriser X pour un utilisateur non-root
 printf 'allowed_users=anybody\nneeds_root_rights=yes\n' > /etc/X11/Xwrapper.config
