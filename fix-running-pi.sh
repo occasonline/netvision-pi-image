@@ -12,6 +12,11 @@ if [ "$(id -u)" -ne 0 ]; then echo "Lancez avec sudo."; exit 1; fi
 id kiosk >/dev/null 2>&1 || useradd -m -s /bin/bash kiosk
 usermod -aG video,tty,input,render kiosk 2>/dev/null || true
 
+# Script de lancement du kiosque (récupéré/mis à jour depuis le dépôt)
+RAW="https://raw.githubusercontent.com/occasonline/netvision-pi-image/master/files/usr/local/bin/netvision-kiosk.sh"
+wget -qO /usr/local/bin/netvision-kiosk.sh "$RAW" || curl -fsSL -o /usr/local/bin/netvision-kiosk.sh "$RAW"
+chmod +x /usr/local/bin/netvision-kiosk.sh
+
 # Autoriser X pour un utilisateur non-root
 printf 'allowed_users=anybody\nneeds_root_rights=yes\n' > /etc/X11/Xwrapper.config
 
