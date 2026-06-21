@@ -51,7 +51,7 @@ B=/boot/firmware; [ -f "$B/config.txt" ] || B=/boot
 grep -q '^dtparam=watchdog=on' "$B/config.txt" || echo 'dtparam=watchdog=on' >> "$B/config.txt"
 grep -q '^disable_splash=1' "$B/config.txt" || echo 'disable_splash=1' >> "$B/config.txt"
 grep -q 'plymouth.ignore-serial-consoles' "$B/cmdline.txt" \
-  || sed -i 's/$/ quiet splash plymouth.ignore-serial-consoles logo.nologo vt.global_cursor_default=0/' "$B/cmdline.txt"
+  || sed -i 's/$/ quiet splash plymouth.ignore-serial-consoles logo.nologo vt.global_cursor_default=0 video=HDMI-A-1:1920x1080M@60/' "$B/cmdline.txt"
 update-initramfs -u || true
 
 echo "== Setup terminé =="

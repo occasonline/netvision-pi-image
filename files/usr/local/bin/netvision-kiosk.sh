@@ -75,7 +75,6 @@ while true; do
     --enable-accelerated-video-decode \
     --no-first-run \
     --fast --fast-start \
-    --incognito \
     --autoplay-policy=no-user-gesture-required \
     --check-for-update-interval=31536000 \
     --overscroll-history-navigation=0 \
