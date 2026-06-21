@@ -27,9 +27,13 @@ INSTALL files/usr/local/bin/netvision-readonly /usr/local/bin/netvision-readonly
 INSTALL files/usr/local/bin/netvision-firstboot.sh /usr/local/bin/netvision-firstboot.sh
 RUN chmod +x /usr/local/bin/netvision-kiosk.sh /usr/local/bin/netvision-readonly /usr/local/bin/netvision-firstboot.sh
 
-# --- Services systemd ---
-INSTALL files/etc/systemd/system/netvision-kiosk.service /etc/systemd/system/netvision-kiosk.service
+# --- Démarrage du kiosque : autologin console (kiosk) + startx ---
 INSTALL files/etc/systemd/system/netvision-firstboot.service /etc/systemd/system/netvision-firstboot.service
+RUN mkdir -p /etc/systemd/system/getty@tty1.service.d
+INSTALL files/etc/systemd/system/getty@tty1.service.d/autologin.conf /etc/systemd/system/getty@tty1.service.d/autologin.conf
+INSTALL files/home/kiosk/.bash_profile /home/kiosk/.bash_profile
+INSTALL files/home/kiosk/.xinitrc /home/kiosk/.xinitrc
+RUN chown -R kiosk:kiosk /home/kiosk
 
 # --- Redémarrage nocturne (cron) ---
 INSTALL files/etc/cron.d/netvision-reboot /etc/cron.d/netvision-reboot
@@ -50,7 +54,7 @@ INSTALL files/boot/netvision/orientation.txt /opt/netvision/defaults/orientation
 # --- Activer les services ---
 RUN systemctl set-default multi-user.target
 RUN systemctl enable netvision-firstboot.service
-RUN systemctl enable netvision-kiosk.service
+RUN systemctl enable getty@tty1.service
 RUN systemctl enable watchdog.service
 
 # --- Réglages de boot (détecte /boot/firmware ou /boot selon le montage) ---

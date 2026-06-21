@@ -1,6 +1,6 @@
 [Unit]
 Description=NetVisionConnect — préparation de la configuration de boot
-Before=netvision-kiosk.service
+Before=getty@tty1.service
 ConditionPathExists=!/boot/firmware/netvision/url.txt
 ConditionPathExists=!/boot/netvision/url.txt
 
