@@ -65,6 +65,9 @@ CHROME="$(command -v chromium-browser || command -v chromium || echo chromium)"
 while true; do
   "$CHROME" \
     --kiosk "$URL" \
+    --window-position=0,0 \
+    --window-size=1920,1080 \
+    --start-fullscreen \
     --noerrdialogs \
     --disable-infobars \
     --disable-session-crash-bubble \
