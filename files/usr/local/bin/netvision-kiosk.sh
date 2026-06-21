@@ -30,10 +30,18 @@ case "$ORIENT" in
   *)                             ROT=normal ;;
 esac
 
-# --- Détecte la sortie d'affichage connectée et applique la rotation ---
+# --- Résolution forcée (Full HD par défaut, idéal signage ; surchargeable) ---
+RES=1920x1080
+if [ -f "$BOOT_CFG/resolution.txt" ]; then
+  CFG_R="$(grep -v '^#' "$BOOT_CFG/resolution.txt" | tr -d '[:space:]')"
+  [ -n "$CFG_R" ] && RES="$CFG_R"
+fi
+
+# --- Détecte la sortie connectée, force la résolution et applique la rotation ---
 OUTPUT="$(xrandr --query | awk '/ connected/{print $1; exit}')"
 if [ -n "$OUTPUT" ]; then
-  xrandr --output "$OUTPUT" --rotate "$ROT" 2>/dev/null
+  xrandr --output "$OUTPUT" --mode "$RES" 2>/dev/null || true
+  xrandr --output "$OUTPUT" --rotate "$ROT" 2>/dev/null || true
 fi
 
 # --- Pas de veille ni d'extinction d'écran ---
