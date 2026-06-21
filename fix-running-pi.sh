@@ -8,6 +8,15 @@
 set -e
 if [ "$(id -u)" -ne 0 ]; then echo "Lancez avec sudo."; exit 1; fi
 
+# --- Installation des paquets nécessaires (idempotent) ---
+export DEBIAN_FRONTEND=noninteractive
+echo "== Installation des paquets (X, Chromium)… =="
+apt-get update
+apt-get install -y --no-install-recommends \
+  xserver-xorg xinit x11-xserver-utils openbox unclutter ca-certificates fonts-dejavu-core
+apt-get install -y --no-install-recommends chromium \
+  || apt-get install -y --no-install-recommends chromium-browser
+
 # Utilisateur kiosque (créé si absent)
 id kiosk >/dev/null 2>&1 || useradd -m -s /bin/bash kiosk
 usermod -aG video,tty,input,render kiosk 2>/dev/null || true
