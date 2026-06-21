@@ -32,6 +32,8 @@ mkdir -p /etc/systemd/system/getty@tty1.service.d
 cp /opt/netvision/autologin.conf /etc/systemd/system/getty@tty1.service.d/autologin.conf
 
 echo "== Splash =="
+mkdir -p /usr/share/plymouth/themes/netvision
+cp -r /opt/netvision/theme/. /usr/share/plymouth/themes/netvision/
 plymouth-set-default-theme netvision || true
 
 echo "== Services =="

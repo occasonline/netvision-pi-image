@@ -2,13 +2,17 @@
 # NetVisionConnect — image kiosque Raspberry Pi 4 / 5 (64-bit)
 # Base : Raspberry Pi OS Lite (arm64) · Construite avec pimod
 #
-# Note : pimod exécute les RUN SANS shell (argv direct). On garde donc
-# uniquement des RUN simples et on délègue toute la logique à setup.sh,
-# exécuté via "RUN bash …" (un vrai shell dans le chroot).
+# Note : pimod exécute les RUN SANS shell (argv direct), et n'installe
+# pas les dossiers dont le parent manque. On garde donc des RUN simples,
+# on stocke les fichiers dans /opt/netvision, et setup.sh (vrai shell)
+# fait toute la configuration après l'installation des paquets.
 # ============================================================
 FROM raspios-lite.img
 
 PUMP 1800M
+
+# Répertoires de préparation
+RUN mkdir -p /opt/netvision/home /opt/netvision/defaults
 
 # --- Scripts NetVisionConnect ---
 INSTALL files/usr/local/bin/netvision-kiosk.sh /usr/local/bin/netvision-kiosk.sh
@@ -20,10 +24,8 @@ INSTALL files/etc/systemd/system/netvision-firstboot.service /etc/systemd/system
 INSTALL files/etc/cron.d/netvision-reboot /etc/cron.d/netvision-reboot
 INSTALL files/etc/watchdog.conf /etc/watchdog.conf
 
-# --- Splash (logo) ---
-INSTALL files/usr/share/plymouth/themes/netvision /usr/share/plymouth/themes/netvision
-
-# --- Fichiers consommés par setup.sh ---
+# --- Fichiers consommés par setup.sh (zone de préparation) ---
+INSTALL files/usr/share/plymouth/themes/netvision /opt/netvision/theme
 INSTALL files/home/kiosk/.bash_profile /opt/netvision/home/.bash_profile
 INSTALL files/home/kiosk/.xinitrc /opt/netvision/home/.xinitrc
 INSTALL files/etc/systemd/system/getty@tty1.service.d/autologin.conf /opt/netvision/autologin.conf
@@ -34,5 +36,5 @@ INSTALL setup.sh /opt/netvision/setup.sh
 # --- Permissions ---
 RUN chmod +x /usr/local/bin/netvision-kiosk.sh /usr/local/bin/netvision-readonly /usr/local/bin/netvision-firstboot.sh /opt/netvision/setup.sh
 
-# --- Toute la configuration (vrai shell) ---
+# --- Toute la configuration (vrai shell, après installation des paquets) ---
 RUN bash /opt/netvision/setup.sh
