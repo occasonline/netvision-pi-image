@@ -1,0 +1,5 @@
+# Horaires d'allumage/extinction de l'écran (via HDMI-CEC), format 24h HH:MM.
+# Modifiable pour CHAQUE écran depuis la carte SD (ce fichier).
+# Laissez une valeur vide (ex. ON=) pour désactiver = écran toujours allumé.
+ON=07:00
+OFF=23:00

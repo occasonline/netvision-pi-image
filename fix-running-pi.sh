@@ -13,7 +13,7 @@ export DEBIAN_FRONTEND=noninteractive
 echo "== Installation des paquets (X, Chromium)… =="
 apt-get update
 apt-get install -y --no-install-recommends \
-  xserver-xorg xinit x11-xserver-utils openbox unclutter ca-certificates fonts-dejavu-core
+  xserver-xorg xinit x11-xserver-utils openbox unclutter ca-certificates fonts-dejavu-core cec-utils
 apt-get install -y --no-install-recommends chromium \
   || apt-get install -y --no-install-recommends chromium-browser
 
@@ -22,9 +22,28 @@ id kiosk >/dev/null 2>&1 || useradd -m -s /bin/bash kiosk
 usermod -aG video,tty,input,render kiosk 2>/dev/null || true
 
 # Script de lancement du kiosque (récupéré/mis à jour depuis le dépôt)
-RAW="https://raw.githubusercontent.com/occasonline/netvision-pi-image/master/files/usr/local/bin/netvision-kiosk.sh"
-wget -qO /usr/local/bin/netvision-kiosk.sh "$RAW" || curl -fsSL -o /usr/local/bin/netvision-kiosk.sh "$RAW"
+BASE="https://raw.githubusercontent.com/occasonline/netvision-pi-image/master/files"
+wget -qO /usr/local/bin/netvision-kiosk.sh "$BASE/usr/local/bin/netvision-kiosk.sh" \
+  || curl -fsSL -o /usr/local/bin/netvision-kiosk.sh "$BASE/usr/local/bin/netvision-kiosk.sh"
 chmod +x /usr/local/bin/netvision-kiosk.sh
+
+# Allumage/extinction programmés de l'écran (HDMI-CEC)
+for f in netvision-screen.sh netvision-screen-tick.sh; do
+  wget -qO "/usr/local/bin/$f" "$BASE/usr/local/bin/$f" \
+    || curl -fsSL -o "/usr/local/bin/$f" "$BASE/usr/local/bin/$f"
+  chmod +x "/usr/local/bin/$f"
+done
+cat > /etc/cron.d/netvision-screen <<'CRON'
+SHELL=/bin/sh
+PATH=/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
+* * * * * root /usr/local/bin/netvision-screen-tick.sh
+@reboot root sleep 30 && /usr/local/bin/netvision-screen-tick.sh --enforce
+CRON
+chmod 644 /etc/cron.d/netvision-screen
+# Horaire par défaut sur la carte SD (modifiable par écran), si absent
+SCFG=/boot/firmware/netvision; [ -d /boot/firmware ] || SCFG=/boot/netvision
+mkdir -p "$SCFG"
+[ -f "$SCFG/schedule.txt" ] || wget -qO "$SCFG/schedule.txt" "$BASE/boot/netvision/schedule.txt" || true
 
 # Autoriser X pour un utilisateur non-root
 printf 'allowed_users=anybody\nneeds_root_rights=yes\n' > /etc/X11/Xwrapper.config
