@@ -38,9 +38,10 @@ echo "==> 5/5 Construction de l'image (20-40 min selon le VPS)…"
 /opt/pimod/pimod.sh Pifile
 
 OUT="netvisionconnect-pi-$(date +%Y%m%d).img"
+rm -f "$OUT" "$OUT.xz"
 mv raspios-lite.img "$OUT"
 echo "==> Compression de $OUT…"
-xz -T0 -9 "$OUT"
+xz -f -9 -T0 "$OUT"
 
 echo ""
 echo "✅ TERMINÉ : $(pwd)/$OUT.xz"
