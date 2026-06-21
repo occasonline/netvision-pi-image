@@ -1,5 +1,10 @@
-# Horaires d'allumage/extinction de l'écran (via HDMI-CEC), format 24h HH:MM.
-# Modifiable pour CHAQUE écran depuis la carte SD (ce fichier).
-# Laissez une valeur vide (ex. ON=) pour désactiver = écran toujours allumé.
-ON=07:00
-OFF=23:00
+# Programmation LOCALE d'allumage/extinction de l'écran (HDMI-CEC), format HH:MM.
+#
+# Par défaut DÉSACTIVÉ (vide) : les horaires se règlent désormais dans le
+# DASHBOARD → fiche écran → « Heures d'activité » (ouverture/fermeture).
+# La TV s'éteint/s'allume automatiquement selon ces heures.
+#
+# Remplissez ON/OFF ci-dessous UNIQUEMENT si vous voulez une programmation
+# locale indépendante du dashboard (ex. fonctionnement hors-ligne garanti).
+ON=
+OFF=
