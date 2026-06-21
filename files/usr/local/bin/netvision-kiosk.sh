@@ -71,11 +71,12 @@ while true; do
     --noerrdialogs \
     --disable-infobars \
     --disable-session-crash-bubble \
-    --disable-features=Translate,TranslateUI \
+    --disable-features=Translate,TranslateUI,UseChromeOSDirectVideoDecoder \
     --enable-features=VaapiVideoDecoder \
     --use-gl=egl \
     --ignore-gpu-blocklist \
-    --enable-accelerated-video-decode \
+    --enable-gpu-rasterization \
+    --enable-zero-copy \
     --no-first-run \
     --fast --fast-start \
     --autoplay-policy=no-user-gesture-required \
