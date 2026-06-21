@@ -52,13 +52,9 @@ xset s noblank
 # --- Masquer le curseur ---
 unclutter -idle 0.1 -root &
 
-# --- Visuel de marque NVC affiché pendant le chargement (avant Chromium) ---
-if command -v feh >/dev/null 2>&1; then
-  if [ -f /usr/local/share/netvision/splash.png ]; then
-    feh --no-fehbg --image-bg "#1B3A6B" --bg-max /usr/local/share/netvision/splash.png 2>/dev/null || true
-  elif [ -f /usr/local/share/netvision/logo.png ]; then
-    feh --no-fehbg --image-bg "#1B3A6B" --bg-center /usr/local/share/netvision/logo.png 2>/dev/null || true
-  fi
+# --- Logo de marque NVC centré sur fond NOIR pendant le chargement ---
+if command -v feh >/dev/null 2>&1 && [ -f /usr/local/share/netvision/logo.png ]; then
+  feh --no-fehbg --image-bg "#000000" --bg-center /usr/local/share/netvision/logo.png 2>/dev/null || true
 fi
 
 # --- Évite la bulle "Restaurer les pages" après un redémarrage ---

@@ -1,8 +1,8 @@
 // NetVisionConnect — splash de démarrage : logo centré sur fond bleu nuit
 
-// Fond bleu marine (#1B3A6B approximatif)
-Window.SetBackgroundTopColor(0.105, 0.227, 0.419);
-Window.SetBackgroundBottomColor(0.07, 0.16, 0.30);
+// Fond noir
+Window.SetBackgroundTopColor(0.0, 0.0, 0.0);
+Window.SetBackgroundBottomColor(0.0, 0.0, 0.0);
 
 logo.image = Image("logo.png");
 logo.sprite = Sprite(logo.image);
