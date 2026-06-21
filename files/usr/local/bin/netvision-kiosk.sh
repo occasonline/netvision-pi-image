@@ -69,6 +69,10 @@ while true; do
     --disable-infobars \
     --disable-session-crash-bubble \
     --disable-features=Translate,TranslateUI \
+    --enable-features=VaapiVideoDecoder \
+    --use-gl=egl \
+    --ignore-gpu-blocklist \
+    --enable-accelerated-video-decode \
     --no-first-run \
     --fast --fast-start \
     --incognito \
