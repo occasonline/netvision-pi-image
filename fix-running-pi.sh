@@ -14,7 +14,7 @@ echo "== Installation des paquets (X, Chromium)… =="
 apt-get update
 apt-get install -y --no-install-recommends \
   xserver-xorg xinit x11-xserver-utils openbox unclutter ca-certificates fonts-dejavu-core \
-  cec-utils feh plymouth plymouth-themes
+  cec-utils feh plymouth plymouth-themes librsvg2-bin
 apt-get install -y --no-install-recommends chromium \
   || apt-get install -y --no-install-recommends chromium-browser
 
@@ -56,14 +56,16 @@ mkdir -p "$SCFG"
 [ -f "$SCFG/schedule.txt" ] || wget -qO "$SCFG/schedule.txt" "$BASE/boot/netvision/schedule.txt" || true
 
 # --- Branding NVC : logo de chargement (feh) + splash de boot (Plymouth) ---
-LOGO_URL="https://raw.githubusercontent.com/occasonline/netvision-pi-image/master/assets/logo.png"
-SPLASH_URL="https://raw.githubusercontent.com/occasonline/netvision-pi-image/master/assets/splash.png"
+ICON_SVG_URL="https://raw.githubusercontent.com/occasonline/netvision-pi-image/master/assets/nvc-icon.svg"
 mkdir -p /usr/local/share/netvision /usr/share/plymouth/themes/netvision
-wget -qO /usr/local/share/netvision/logo.png "$LOGO_URL" \
-  || curl -fsSL -o /usr/local/share/netvision/logo.png "$LOGO_URL" || true
-wget -qO /usr/local/share/netvision/splash.png "$SPLASH_URL" \
-  || curl -fsSL -o /usr/local/share/netvision/splash.png "$SPLASH_URL" || true
-cp /usr/local/share/netvision/logo.png /usr/share/plymouth/themes/netvision/logo.png 2>/dev/null || true
+wget -qO /usr/local/share/netvision/nvc-icon.svg "$ICON_SVG_URL" \
+  || curl -fsSL -o /usr/local/share/netvision/nvc-icon.svg "$ICON_SVG_URL" || true
+# Génère le logo orange (PNG) à partir du SVG, pour le splash feh + Plymouth
+if command -v rsvg-convert >/dev/null 2>&1; then
+  rsvg-convert -w 400 -h 400 -b none /usr/local/share/netvision/nvc-icon.svg \
+    -o /usr/local/share/netvision/logo.png 2>/dev/null || true
+fi
+cp -f /usr/local/share/netvision/logo.png /usr/share/plymouth/themes/netvision/logo.png 2>/dev/null || true
 for f in netvision.plymouth netvision.script; do
   wget -qO "/usr/share/plymouth/themes/netvision/$f" "$BASE/usr/share/plymouth/themes/netvision/$f" \
     || curl -fsSL -o "/usr/share/plymouth/themes/netvision/$f" "$BASE/usr/share/plymouth/themes/netvision/$f" || true
