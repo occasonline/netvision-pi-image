@@ -52,10 +52,8 @@ xset s noblank
 # --- Masquer le curseur ---
 unclutter -idle 0.1 -root &
 
-# --- Logo de marque NVC centré sur fond NOIR pendant le chargement ---
-if command -v feh >/dev/null 2>&1 && [ -f /usr/local/share/netvision/logo.png ]; then
-  feh --no-fehbg --image-bg "#000000" --bg-center /usr/local/share/netvision/logo.png 2>/dev/null || true
-fi
+# --- Fond noir uni pendant le chargement (pas de logo) ---
+xsetroot -solid "#000000" 2>/dev/null || true
 
 # --- Évite la bulle "Restaurer les pages" après un redémarrage ---
 PREF="$HOME/.config/chromium/Default/Preferences"
